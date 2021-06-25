@@ -1,16 +1,21 @@
 package com.freenow.controller;
 
 import com.freenow.controller.mapper.DriverMapper;
+import com.freenow.datatransferobject.CarSelectDTO;
 import com.freenow.datatransferobject.DriverDTO;
 import com.freenow.domainobject.DriverDO;
 import com.freenow.domainvalue.OnlineStatus;
+import com.freenow.exception.CarAlreadyInUseException;
 import com.freenow.exception.ConstraintsViolationException;
 import com.freenow.exception.EntityNotFoundException;
 import com.freenow.service.driver.DriverService;
+
 import java.util.List;
 import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,9 +63,10 @@ public class DriverController
 
 
     @DeleteMapping("/{driverId}")
-    public void deleteDriver(@PathVariable long driverId) throws EntityNotFoundException
+    public ResponseEntity<HttpStatus> deleteDriver(@PathVariable long driverId) throws EntityNotFoundException
     {
         driverService.delete(driverId);
+        return new ResponseEntity<HttpStatus>(HttpStatus.ACCEPTED);
     }
 
 
@@ -77,5 +83,26 @@ public class DriverController
     public List<DriverDTO> findDrivers(@RequestParam OnlineStatus onlineStatus)
     {
         return DriverMapper.makeDriverDTOList(driverService.find(onlineStatus));
+    }
+
+
+    @PutMapping("/selectCar")
+    public void selectCar(@Valid @RequestBody CarSelectDTO carSelectDTO) throws EntityNotFoundException, CarAlreadyInUseException
+    {
+        driverService.selectCar(carSelectDTO);
+    }
+
+
+    @PutMapping("/deSelectCar")
+    public void deSelectCar(@Valid @RequestBody CarSelectDTO carSelectDTO) throws EntityNotFoundException
+    {
+        driverService.deSelectCar(carSelectDTO);
+    }
+
+
+    @PostMapping("/findDriverByParams")
+    public List<DriverDTO> findDriverByParams(@Valid @RequestBody DriverDTO driverDTO)
+    {
+        return DriverMapper.makeDriverDTOList(driverService.findDriverByParams(driverDTO));
     }
 }

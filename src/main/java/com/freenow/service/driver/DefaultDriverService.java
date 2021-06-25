@@ -1,12 +1,18 @@
 package com.freenow.service.driver;
 
 import com.freenow.dataaccessobject.DriverRepository;
+import com.freenow.datatransferobject.CarSelectDTO;
+import com.freenow.datatransferobject.DriverDTO;
+import com.freenow.domainobject.CarDO;
 import com.freenow.domainobject.DriverDO;
 import com.freenow.domainvalue.GeoCoordinate;
 import com.freenow.domainvalue.OnlineStatus;
+import com.freenow.exception.CarAlreadyInUseException;
 import com.freenow.exception.ConstraintsViolationException;
 import com.freenow.exception.EntityNotFoundException;
+
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -24,11 +30,13 @@ public class DefaultDriverService implements DriverService
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDriverService.class);
 
     private final DriverRepository driverRepository;
+    private final CarService carService;
 
 
-    public DefaultDriverService(final DriverRepository driverRepository)
+    public DefaultDriverService(final DriverRepository driverRepository, CarService carService)
     {
         this.driverRepository = driverRepository;
+        this.carService = carService;
     }
 
 
@@ -111,6 +119,45 @@ public class DefaultDriverService implements DriverService
     public List<DriverDO> find(OnlineStatus onlineStatus)
     {
         return driverRepository.findByOnlineStatus(onlineStatus);
+    }
+
+
+    @Override
+    public void selectCar(CarSelectDTO carSelectDTO) throws EntityNotFoundException, CarAlreadyInUseException
+    {
+        if (isCarAlreadySelectedByOnlineDriver(carSelectDTO.getCarId()))
+        {
+            throw new CarAlreadyInUseException("Car can not be selected by another ONLINE driver");
+        }
+        DriverDO driverDO = findDriverChecked(carSelectDTO.getDriverId());
+        CarDO carDO = carService.find(carSelectDTO.getCarId());
+        driverDO.setCarDO(carDO);
+        driverRepository.save(driverDO);
+    }
+
+
+    private boolean isCarAlreadySelectedByOnlineDriver(long carId)
+    {
+        DriverDO driverDO = driverRepository.findByOnlineStatusIsAndCarDOId(OnlineStatus.ONLINE,carId);
+        if (driverDO == null)
+            return false;
+        return true;
+    }
+
+
+    @Override
+    public void deSelectCar(CarSelectDTO carSelectDTO) throws EntityNotFoundException
+    {
+        DriverDO driverDO = findDriverChecked(carSelectDTO.getDriverId());
+        driverDO.setCarDO(null);
+        driverRepository.save(driverDO);
+    }
+
+
+    @Override
+    public List<DriverDO>  findDriverByParams(DriverDTO driverDTO)
+    {
+        return driverRepository.findByParams(driverDTO);
     }
 
 

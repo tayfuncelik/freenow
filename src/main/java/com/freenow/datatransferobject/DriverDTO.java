@@ -3,20 +3,28 @@ package com.freenow.datatransferobject;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.freenow.domainvalue.GeoCoordinate;
+import com.freenow.domainvalue.OnlineStatus;
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DriverDTO
 {
     private Long id;
-
     @NotNull(message = "Username can not be null!")
+    @ApiModelProperty(name = "username", dataType = "String", value = "myname")
     private String username;
-
     @NotNull(message = "Password can not be null!")
     private String password;
-
+    @ApiModelProperty(name = "coordinate", dataType = "GeoCoordinate")
     private GeoCoordinate coordinate;
+    @ApiModelProperty(name = "onlineStatus", dataType = "OnlineStatus")
+    private OnlineStatus onlineStatus;
+    @ApiModelProperty(name = "deleted", dataType = "Boolean", value = "false")
+    private Boolean deleted;
+
+    private CarDTO carDTO;
 
 
     private DriverDTO()
@@ -24,18 +32,33 @@ public class DriverDTO
     }
 
 
-    private DriverDTO(Long id, String username, String password, GeoCoordinate coordinate)
+    private DriverDTO(Long id, String username, String password, GeoCoordinate coordinate, OnlineStatus onlineStatus, Boolean deleted, CarDTO carDTO)
     {
         this.id = id;
         this.username = username;
         this.password = password;
         this.coordinate = coordinate;
+        this.carDTO = carDTO;
+        this.onlineStatus = onlineStatus;
+        this.deleted = deleted;
     }
 
 
     public static DriverDTOBuilder newBuilder()
     {
         return new DriverDTOBuilder();
+    }
+
+
+    public Boolean getDeleted()
+    {
+        return deleted;
+    }
+
+
+    public OnlineStatus getOnlineStatus()
+    {
+        return onlineStatus;
     }
 
 
@@ -64,12 +87,42 @@ public class DriverDTO
     }
 
 
+    public CarDTO getCarDTO()
+    {
+        return carDTO;
+    }
+
+
     public static class DriverDTOBuilder
     {
         private Long id;
         private String username;
         private String password;
         private GeoCoordinate coordinate;
+        private CarDTO carDTO;
+        private OnlineStatus onlineStatus;
+        private boolean deleted;
+
+
+        public DriverDTOBuilder setDeleted(boolean deleted)
+        {
+            this.deleted = deleted;
+            return this;
+        }
+
+
+        public DriverDTOBuilder setOnlineStatus(OnlineStatus onlineStatus)
+        {
+            this.onlineStatus = onlineStatus;
+            return this;
+        }
+
+
+        public DriverDTOBuilder setCarDTO(CarDTO carDTO)
+        {
+            this.carDTO = carDTO;
+            return this;
+        }
 
 
         public DriverDTOBuilder setId(Long id)
@@ -102,7 +155,7 @@ public class DriverDTO
 
         public DriverDTO createDriverDTO()
         {
-            return new DriverDTO(id, username, password, coordinate);
+            return new DriverDTO(id, username, password, coordinate, onlineStatus, deleted, carDTO);
         }
 
     }

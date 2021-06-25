@@ -40,3 +40,10 @@ values
  (8,
  'aced0005737200226f72672e737072696e676672616d65776f726b2e646174612e67656f2e506f696e7431b9e90ef11a4006020002440001784400017978704023000000000000404bfa1cac083127', now(), now(), false, 'ONLINE',
 'driver08pw', 'driver08');
+
+
+insert into car (id,date_created, license_plate, seat_count, convertible, rating, engine_type)
+values (1,now(), '20 ABC 11', 4, false, 12, 'electric');
+
+insert into car (id, date_created,license_plate, seat_count, convertible, rating, engine_type)
+values (2,now(), '10 KMK 22', 2, true, 33, 'diesel');
