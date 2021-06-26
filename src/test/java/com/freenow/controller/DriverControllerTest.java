@@ -2,9 +2,7 @@ package com.freenow.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.freenow.FreeNowServerApplicantTestApplication;
-import com.freenow.controller.mapper.CarMapper;
 import com.freenow.controller.mapper.DriverMapper;
-import com.freenow.datatransferobject.CarDTO;
 import com.freenow.datatransferobject.CarSelectDTO;
 import com.freenow.datatransferobject.DriverDTO;
 import com.freenow.domainobject.CarDO;
@@ -12,7 +10,6 @@ import com.freenow.domainobject.DriverDO;
 import com.freenow.domainvalue.GeoCoordinate;
 import com.freenow.domainvalue.OnlineStatus;
 import com.freenow.exception.CarAlreadyInUseException;
-import com.freenow.service.driver.CarService;
 import com.freenow.service.driver.DriverService;
 import org.aspectj.lang.annotation.Before;
 import org.assertj.core.api.Assertions;
@@ -26,7 +23,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.util.NestedServletException;
@@ -42,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = FreeNowServerApplicantTestApplication.class)
 @AutoConfigureMockMvc
-public class DriverControllerTest
+public class DriverControllerTest extends Auth
 {
 
     private final static String endPoint = "/v1/drivers";
@@ -65,14 +61,13 @@ public class DriverControllerTest
     public void createDriver() throws Exception
     {
         // given
-        GeoCoordinate geoCoordinate = new GeoCoordinate(2.3, 4.5);
         DriverDO driverDO = new DriverDO("username", "password");
-        //        driverDO.setCoordinate(geoCoordinate);
         // when
         when(driverService.create(Mockito.any())).thenReturn(driverDO);
         // then
         mockMvc.perform(MockMvcRequestBuilders
             .post(endPoint)
+            .header("Authorization", getJWT())
             .content(asJsonString(DriverMapper.makeDriverDTO(driverDO)))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
@@ -92,6 +87,7 @@ public class DriverControllerTest
         // then
         mockMvc.perform(MockMvcRequestBuilders
             .get(endPoint.concat("/{driverId}"), driverDO.getId())
+            .header("Authorization", getJWT())
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -103,7 +99,9 @@ public class DriverControllerTest
     @Test
     public void deleteDriver() throws Exception
     {
-        mockMvc.perform(MockMvcRequestBuilders.delete(endPoint.concat("/{driverId}"), 1))
+        mockMvc.perform(MockMvcRequestBuilders
+            .delete(endPoint.concat("/{driverId}"), 1)
+            .header("Authorization", getJWT()))
             .andExpect(status().isAccepted());
     }
 
@@ -119,6 +117,7 @@ public class DriverControllerTest
 
         mockMvc.perform(MockMvcRequestBuilders
             .put(endPoint.concat("/{driverId}"), 1)
+            .header("Authorization", getJWT())
             .param("longitude", String.valueOf(geoCoordinate.getLongitude()))
             .param("latitude", String.valueOf(geoCoordinate.getLatitude()))
             .contentType(MediaType.APPLICATION_JSON)
@@ -140,6 +139,7 @@ public class DriverControllerTest
         // then
         mockMvc.perform(MockMvcRequestBuilders
             .get(endPoint)
+            .header("Authorization", getJWT())
             .param("onlineStatus", OnlineStatus.ONLINE.name())
             .accept(MediaType.APPLICATION_JSON))
             .andDo(print())
@@ -159,6 +159,7 @@ public class DriverControllerTest
         // then
         mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/drivers/selectCar")
+            .header("Authorization", getJWT())
             .content(asJsonString(carSelectDTO))
             .contentType(MediaType.APPLICATION_JSON)//RequestBody
             .accept(MediaType.APPLICATION_JSON)).andDo(print())
@@ -179,6 +180,7 @@ public class DriverControllerTest
         {
             mockMvc.perform(MockMvcRequestBuilders
                 .put(endPoint.concat("/selectCar"))
+                .header("Authorization", getJWT())
                 .content(asJsonString(carSelectDTO))
                 .contentType(MediaType.APPLICATION_JSON)//RequestBody
                 .accept(MediaType.APPLICATION_JSON))
@@ -205,6 +207,7 @@ public class DriverControllerTest
         // then
         mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/drivers/deSelectCar")
+            .header("Authorization", getJWT())
             .content(asJsonString(carSelectDTO))
             .contentType(MediaType.APPLICATION_JSON)//RequestBody
             .accept(MediaType.APPLICATION_JSON)).andDo(print())
@@ -229,6 +232,7 @@ public class DriverControllerTest
         // then
         mockMvc.perform(MockMvcRequestBuilders
             .post(endPoint.concat("/findDriverByParams"))
+            .header("Authorization", getJWT())
             .content(asJsonString(driverDTO))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))

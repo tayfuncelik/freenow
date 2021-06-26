@@ -13,6 +13,7 @@ import com.freenow.exception.EntityNotFoundException;
 
 import java.util.List;
 
+import com.freenow.service.car.CarService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;

@@ -1,4 +1,4 @@
-package com.freenow.service.driver;
+package com.freenow.service.car;
 
 import com.freenow.domainobject.CarDO;
 import com.freenow.exception.ConstraintsViolationException;

@@ -6,12 +6,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.ApiKey;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.Arrays;
 
 @EnableSwagger2
 @SpringBootApplication
@@ -39,13 +43,25 @@ public class FreeNowServerApplicantTestApplication implements WebMvcConfigurer
             .apis(RequestHandlerSelectors.basePackage(getClass().getPackage().getName()))
             .paths(PathSelectors.any())
             .build()
-            .apiInfo(generateApiInfo());
+            .apiInfo(generateApiInfo())
+            .securitySchemes(Arrays.asList(apiKey()));
     }
 
 
     private ApiInfo generateApiInfo()
     {
-        return new ApiInfo("freenow Server Applicant Test Service", "This service is to check the technology knowledge of a server applicant for freenow.", "Version 1.0 - mw",
-            "urn:tos", "career@freenow.com", "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0");
+        return new ApiInfoBuilder().title("freenow Server Applicant Test Service")
+            .description("This service is to check the technology knowledge of a server applicant for freenow.")
+            .version("Version 1.0 - mw")
+            .license("Apache 2.0")
+            .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0")
+            .termsOfServiceUrl("urn:tos")
+            .build();
+    }
+
+
+    private ApiKey apiKey()
+    {
+        return new ApiKey("JWT_LOGIN", "Authorization", "header");
     }
 }

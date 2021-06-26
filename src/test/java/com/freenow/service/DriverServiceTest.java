@@ -12,7 +12,7 @@ import com.freenow.domainvalue.OnlineStatus;
 import com.freenow.exception.CarAlreadyInUseException;
 import com.freenow.exception.ConstraintsViolationException;
 import com.freenow.exception.EntityNotFoundException;
-import com.freenow.service.driver.CarService;
+import com.freenow.service.car.CarService;
 import com.freenow.service.driver.DriverService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -3,8 +3,9 @@ package com.freenow.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.freenow.FreeNowServerApplicantTestApplication;
 import com.freenow.controller.mapper.CarMapper;
+import com.freenow.controller.payload.AuthRequest;
 import com.freenow.domainobject.CarDO;
-import com.freenow.service.driver.CarService;
+import com.freenow.service.car.CarService;
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = FreeNowServerApplicantTestApplication.class)
 @AutoConfigureMockMvc
-public class CarControllerTest
+public class CarControllerTest extends Auth
 {
     @Autowired
     protected MockMvc mockMvc;
@@ -47,6 +48,39 @@ public class CarControllerTest
 
 
     @Test
+    public void register() throws Exception
+    {
+        AuthRequest authRequest = new AuthRequest();
+        authRequest.setPassword("pass");
+        this.mockMvc.perform(MockMvcRequestBuilders
+            .post("/auth/register")
+            .header("Authorization", getJWT())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonString(authRequest))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
+
+
+    @Test
+    public void nonRegisteredRequest() throws Exception
+    {
+        // given
+        CarDO carDO = new CarDO(1l, null, null, false, null, null);
+        // when
+        when(carService.create(Mockito.any())).thenReturn(carDO);
+        // then
+
+        mockMvc.perform(MockMvcRequestBuilders
+            .post("/v1/cars")
+            .content(asJsonString(CarMapper.makeCarDTO(carDO)))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isUnauthorized());
+    }
+
+
+    @Test
     public void testCreateCar() throws Exception
     {
         // given
@@ -56,6 +90,7 @@ public class CarControllerTest
         // then
         mockMvc.perform(MockMvcRequestBuilders
             .post("/v1/cars")
+            .header("Authorization", getJWT())
             .content(asJsonString(CarMapper.makeCarDTO(carDO)))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
@@ -73,6 +108,7 @@ public class CarControllerTest
         // then
         mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/cars/{driverId}", carDO.getId())
+            .header("Authorization", getJWT())
             .accept(MediaType.APPLICATION_JSON))
             .andDo(print())
             .andExpect(status().isOk())
@@ -84,7 +120,9 @@ public class CarControllerTest
     @Test
     public void testDelete() throws Exception
     {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/v1/cars/{driverId}", 1))
+        mockMvc.perform(MockMvcRequestBuilders
+            .delete("/v1/cars/{driverId}", 1)
+            .header("Authorization", getJWT()))
             .andExpect(status().isAccepted());
     }
 
@@ -99,6 +137,7 @@ public class CarControllerTest
 
         mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/cars")
+            .header("Authorization", getJWT())
             .accept(MediaType.APPLICATION_JSON))
             .andDo(print())
             .andExpect(status().isOk())
@@ -117,6 +156,7 @@ public class CarControllerTest
 
         mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/cars/{carId}", carDO.getId())
+            .header("Authorization", getJWT())
             .content(asJsonString(CarMapper.makeCarDTO(carDO)))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
