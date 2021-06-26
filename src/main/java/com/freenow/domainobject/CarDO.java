@@ -52,6 +52,12 @@ public class CarDO
     }
 
 
+    public void setId(Long id)
+    {
+        this.id = id;
+    }
+
+
     public String getLicensePlate()
     {
         return licensePlate;

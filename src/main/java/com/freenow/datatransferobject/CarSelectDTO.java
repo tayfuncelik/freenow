@@ -1,7 +1,5 @@
 package com.freenow.datatransferobject;
 
-import com.freenow.domainvalue.GeoCoordinate;
-import com.freenow.domainvalue.OnlineStatus;
 import io.swagger.annotations.ApiModelProperty;
 
 public class CarSelectDTO
@@ -47,31 +45,30 @@ public class CarSelectDTO
         this.carId = carId;
     }
 
-
-//    public static class CarDTOBuilder
-//    {
-//        private long driverId;
-//        private long carId;
-//
-//
-//        public CarSelectDTO createCarDTO()
-//        {
-//            return new CarSelectDTO(carId, driverId);
-//        }
-//
-//
-//        public CarSelectDTO.CarDTOBuilder setCarId(Long carId)
-//        {
-//            this.carId = carId;
-//            return this;
-//        }
-//
-//
-//        public CarSelectDTO.CarDTOBuilder setDriverId(Long driverId)
-//        {
-//            this.driverId = driverId;
-//            return this;
-//        }
-//
-//    }
+    //    public static class CarDTOBuilder
+    //    {
+    //        private long driverId;
+    //        private long carId;
+    //
+    //
+    //        public CarSelectDTO createCarDTO()
+    //        {
+    //            return new CarSelectDTO(carId, driverId);
+    //        }
+    //
+    //
+    //        public CarSelectDTO.CarDTOBuilder setCarId(Long carId)
+    //        {
+    //            this.carId = carId;
+    //            return this;
+    //        }
+    //
+    //
+    //        public CarSelectDTO.CarDTOBuilder setDriverId(Long driverId)
+    //        {
+    //            this.driverId = driverId;
+    //            return this;
+    //        }
+    //
+    //    }
 }

@@ -11,9 +11,11 @@ import com.freenow.domainobject.CarDO;
 import com.freenow.domainobject.DriverDO;
 import com.freenow.domainvalue.GeoCoordinate;
 import com.freenow.domainvalue.OnlineStatus;
+import com.freenow.exception.CarAlreadyInUseException;
 import com.freenow.service.driver.CarService;
 import com.freenow.service.driver.DriverService;
 import org.aspectj.lang.annotation.Before;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -24,14 +26,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.util.NestedServletException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -90,7 +94,6 @@ public class DriverControllerTest
             .get(endPoint.concat("/{driverId}"), driverDO.getId())
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
-            //                .andDo(print())
             .andExpect(status().isOk())
             .andExpect(MockMvcResultMatchers.jsonPath("$.username").value(driverDO.getUsername()))
             .andExpect(MockMvcResultMatchers.jsonPath("$.password").value(driverDO.getPassword()));
@@ -160,6 +163,35 @@ public class DriverControllerTest
             .contentType(MediaType.APPLICATION_JSON)//RequestBody
             .accept(MediaType.APPLICATION_JSON)).andDo(print())
             .andExpect(status().isOk());
+    }
+
+
+    @Test
+    public void selectCarOnlineDriverOnlyOnce() throws Exception
+    {
+        // given
+        CarSelectDTO carSelectDTO = new CarSelectDTO(1L, 5L);
+        // when
+        doThrow(CarAlreadyInUseException.class).when(driverService).selectCar(Mockito.any());
+        // then
+
+        try
+        {
+            mockMvc.perform(MockMvcRequestBuilders
+                .put(endPoint.concat("/selectCar"))
+                .content(asJsonString(carSelectDTO))
+                .contentType(MediaType.APPLICATION_JSON)//RequestBody
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print());
+        }
+        catch (NestedServletException e)
+        {
+            Exception exception =
+                assertThrows(CarAlreadyInUseException.class, () -> {
+                    throw e.getCause();
+                });
+            Assertions.assertThat(exception).isExactlyInstanceOf(CarAlreadyInUseException.class);
+        }
     }
 
 

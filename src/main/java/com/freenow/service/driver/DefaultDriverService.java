@@ -138,7 +138,7 @@ public class DefaultDriverService implements DriverService
 
     private boolean isCarAlreadySelectedByOnlineDriver(long carId)
     {
-        DriverDO driverDO = driverRepository.findByOnlineStatusIsAndCarDOId(OnlineStatus.ONLINE,carId);
+        DriverDO driverDO = driverRepository.findByOnlineStatusIsAndCarDOId(OnlineStatus.ONLINE, carId);
         if (driverDO == null)
             return false;
         return true;
@@ -155,7 +155,7 @@ public class DefaultDriverService implements DriverService
 
 
     @Override
-    public List<DriverDO>  findDriverByParams(DriverDTO driverDTO)
+    public List<DriverDO> findDriverByParams(DriverDTO driverDTO)
     {
         return driverRepository.findByParams(driverDTO);
     }

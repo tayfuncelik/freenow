@@ -1,11 +1,7 @@
 package com.freenow.service.driver;
 
 import com.freenow.dataaccessobject.CarRepository;
-import com.freenow.dataaccessobject.DriverRepository;
 import com.freenow.domainobject.CarDO;
-import com.freenow.domainobject.DriverDO;
-import com.freenow.domainvalue.GeoCoordinate;
-import com.freenow.domainvalue.OnlineStatus;
 import com.freenow.exception.ConstraintsViolationException;
 import com.freenow.exception.EntityNotFoundException;
 import org.slf4j.Logger;
