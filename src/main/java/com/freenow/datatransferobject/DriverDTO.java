@@ -12,10 +12,10 @@ import javax.validation.constraints.NotNull;
 public class DriverDTO
 {
     private Long id;
-    @NotNull(message = "Username can not be null!")
+//    @NotNull(message = "Username can not be null!")
     @ApiModelProperty(name = "username", dataType = "String", value = "myname")
     private String username;
-    @NotNull(message = "Password can not be null!")
+//    @NotNull(message = "Password can not be null!")
     private String password;
     @ApiModelProperty(name = "coordinate", dataType = "GeoCoordinate")
     private GeoCoordinate coordinate;

@@ -23,10 +23,10 @@ public interface DriverRepository extends CrudRepository<DriverDO, Long>
 
     @Query("select d from DriverDO d where "
 
-        + " (:#{#driverDTO.coordinate.point} is null OR d.coordinate.point = :#{#driverDTO.coordinate.point})"
-        + " AND (:#{#driverDTO.deleted} is null OR d.deleted = :#{#driverDTO.deleted})"
+//        + " (:#{#driverDTO.coordinate.point} is null OR d.coordinate.point = :#{#driverDTO.coordinate.point})"
+        + "  (:#{#driverDTO.deleted} is null OR d.deleted = :#{#driverDTO.deleted})"
         + " AND (:#{#driverDTO.username} is null OR d.username = :#{#driverDTO.username})"
-        + " AND (:#{#driverDTO.onlineStatus} is null OR d.onlineStatus = :#{#driverDTO.onlineStatus})"
+        + " AND ( d.onlineStatus = 'ONLINE')"
 
         + " AND (:#{#driverDTO.carDTO.licensePlate} is null OR d.carDO.licensePlate = :#{#driverDTO.carDTO.licensePlate})"
         + " AND (:#{#driverDTO.carDTO.engineType} is null OR d.carDO.engineType = :#{#driverDTO.carDTO.engineType})"
